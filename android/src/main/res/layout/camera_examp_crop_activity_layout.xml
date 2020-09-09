@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000"
+    tools:ignore="HardcodedText"
+    android:orientation="vertical">
+
+    <com.studyyoun.camera.flutter_custom_camera_pugin.cameralibrary.view.CropLayout
+        android:id="@+id/cropLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:background="#00000000"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_crop"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/camera_examp_crop_ripple"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:text="确定"
+            android:textColor="#FFF"
+            android:textSize="16sp"
+            />
+
+        <View
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:background="#88FFFFFF" />
+
+        <TextView
+            android:id="@+id/tv_cancel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/camera_examp_crop_ripple"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:text="取消"
+            android:textColor="#FFF"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+</FrameLayout>

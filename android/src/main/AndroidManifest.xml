@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.studyyoun.camera.flutter_custom_camera_pugin">
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <application>
+        <activity android:name=".camera.CameraOpenActivity"  android:theme="@style/CameraTransparent" />
+        <activity android:name=".camera.PhotoAlbumOpenActivity" android:theme="@style/CameraTransparent" />
+        <activity
+            android:name=".cameralibrary.activity.CameraExampShowActivity"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".cameralibrary.activity.CameraExampCorpActivity"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".cameralibrary.activity.CameraXExampOpenActivity"
+            android:launchMode="singleTop" />
+    </application>
+</manifest>
