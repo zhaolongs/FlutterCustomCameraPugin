@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 /// 相册配置使用参数
 class CameraConfigOptions {
 
+  ///0.0.1 版本
   ///默认自定义相册是否显示 相册切换
   bool isShowPhotoAlbum = true;
 

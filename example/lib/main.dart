@@ -99,7 +99,9 @@ class _MyAppState extends State<MyApp> {
   File imageFile;
 
   ///打开相机
+  ///如 你点击一个按钮
   void openCamera() async {
+    ///相机使用配置参数
     CameraConfigOptions options = new CameraConfigOptions();
 
     ///默认自定义相册是否显示 相册切换
@@ -118,6 +120,9 @@ class _MyAppState extends State<MyApp> {
 
     if (resultInfo.code == 200) {
       imageFile = new File(resultInfo.data["lImageUrl"]);
+    } else if (resultInfo.code == 201) {
+      ///201 是拍照取消 如点击了关闭按钮
+      ///或者是 Android 手机的后退按钮
     }
 
     _cameraResultInfo = resultInfo;
@@ -130,10 +135,14 @@ class _MyAppState extends State<MyApp> {
 
   ///打开相册
   void openPhotoAlbum() async {
-    _cameraResultInfo = await FlutterCustomCameraPugin.openPhotoAlbum();
-    if (_cameraResultInfo.code == 200) {
-      imageFile = new File(_cameraResultInfo.data["lImageUrl"]);
+    /// 相册的选择返回结果
+    /// 选择成功与取消都会回调
+    CameraResultInfo resultInfo =await FlutterCustomCameraPugin.openPhotoAlbum();
+    if (resultInfo.code == 200) {
+      imageFile = new File(resultInfo.data["lImageUrl"]);
     }
+
+    _cameraResultInfo =resultInfo ;
     setState(() {});
   }
 }
