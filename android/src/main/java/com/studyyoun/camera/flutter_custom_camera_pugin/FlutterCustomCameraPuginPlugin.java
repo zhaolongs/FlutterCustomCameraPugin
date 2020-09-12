@@ -38,13 +38,8 @@ import io.flutter.plugin.common.StandardMessageCodec;
 public class FlutterCustomCameraPuginPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
 	
 	private static final String openCameraMethodName = "openCamera";
-	/// The MethodChannel that will the communication between Flutter and native Android
-	///
-	/// This local reference serves to register the plugin with the Flutter Engine and unregister it
-	/// when the Flutter Engine is detached from the Activity
 	private BasicMessageChannel mMessageChannel;
 	private Context mContext;
-	
 	private CameraFinishRecivier mCameraFinishRecivier;
 	private BasicMessageChannel.Reply mReply;
 	private Activity mActivity;
@@ -112,12 +107,9 @@ public class FlutterCustomCameraPuginPlugin implements FlutterPlugin, MethodCall
 			reply.reply(resultMap);
 		} else if (lMethod.equals(openCameraMethodName)) {
 			
-			Map<String, Object> lObjectMap = (Map<String, Object>) arguments.get("options");
-			CameraConfigOptions lCameraConfigOptions = new CameraConfigOptions();
+			//拍照
+			CameraConfigOptions lCameraConfigOptions = getCameraConfigOptions(arguments);
 			
-			lCameraConfigOptions.isShowSelectCamera = (boolean) lObjectMap.get("isShowSelectCamera");
-			lCameraConfigOptions.isShowPhotoAlbum = (boolean) lObjectMap.get("isShowPhotoAlbum");
-			lCameraConfigOptions.isShowFlashButtonCamera = (boolean) lObjectMap.get("isShowFlashButtonCamera");
 			///打开自定义相机
 			Intent lIntent = new Intent(mContext, CameraOpenActivity.class);
 			lIntent.putExtra("cameraConfigOptions", lCameraConfigOptions);
@@ -127,6 +119,8 @@ public class FlutterCustomCameraPuginPlugin implements FlutterPlugin, MethodCall
 			///打开系统相册
 			Intent lIntent = new Intent(mContext, PhotoAlbumOpenActivity.class);
 			lIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			CameraConfigOptions lCameraConfigOptions = getCameraConfigOptions(arguments);
+			lIntent.putExtra("cameraConfigOptions", lCameraConfigOptions);
 			mContext.startActivity(lIntent);
 			
 			
@@ -137,6 +131,18 @@ public class FlutterCustomCameraPuginPlugin implements FlutterPlugin, MethodCall
 			//回调 此方法只能使用一次
 			reply.reply(resultMap);
 		}
+	}
+	
+	private CameraConfigOptions getCameraConfigOptions(Map<Object, Object> arguments) {
+		Map<String, Object> lObjectMap = (Map<String, Object>) arguments.get("options");
+		
+		CameraConfigOptions lCameraConfigOptions = new CameraConfigOptions();
+		lCameraConfigOptions.isShowSelectCamera = (boolean) lObjectMap.get("isShowSelectCamera");
+		lCameraConfigOptions.isShowPhotoAlbum = (boolean) lObjectMap.get("isShowPhotoAlbum");
+		lCameraConfigOptions.isShowFlashButtonCamera = (boolean) lObjectMap.get("isShowFlashButtonCamera");
+		lCameraConfigOptions.isPreviewImage = (boolean) lObjectMap.get("isPreviewImage");
+		lCameraConfigOptions.isCropImage = (boolean) lObjectMap.get("isCropImage");
+		return lCameraConfigOptions;
 	}
 	
 	// This static function is optional and equivalent to onAttachedToEngine. It supports the old

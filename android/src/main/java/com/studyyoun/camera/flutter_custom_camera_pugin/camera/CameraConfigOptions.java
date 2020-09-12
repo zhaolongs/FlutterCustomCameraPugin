@@ -22,6 +22,13 @@ public  class CameraConfigOptions implements Serializable {
 	///默认自定义相册是否显示 闪光灯开关按钮
 	public boolean isShowFlashButtonCamera = true;
 	
+	/// 是否预览照片 如拍照完成 或者相册选择完成
+	public boolean isPreviewImage = true;
+	
+	/// 是否启动裁剪功能 如拍照完成 或者相册选择完成
+	public boolean isCropImage = false;
+	/// 是否显示提示
+	public boolean isShowToast = true ;
 	
 	public boolean isShowPhotoAlbum() {
 		return isShowPhotoAlbum;
@@ -45,5 +52,21 @@ public  class CameraConfigOptions implements Serializable {
 	
 	public void setShowFlashButtonCamera(boolean showFlashButtonCamera) {
 		isShowFlashButtonCamera = showFlashButtonCamera;
+	}
+	
+	public boolean isPreviewImage() {
+		return isPreviewImage;
+	}
+	
+	public void setPreviewImage(boolean previewImage) {
+		isPreviewImage = previewImage;
+	}
+	
+	public boolean isCropImage() {
+		return isCropImage;
+	}
+	
+	public void setCropImage(boolean cropImage) {
+		isCropImage = cropImage;
 	}
 }

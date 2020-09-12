@@ -101,6 +101,7 @@ class _MyAppState extends State<MyApp> {
   ///打开相机
   ///如 你点击一个按钮
   void openCamera() async {
+
     ///相机使用配置参数
     CameraConfigOptions options = new CameraConfigOptions();
 
@@ -112,7 +113,8 @@ class _MyAppState extends State<MyApp> {
 
     ///默认自定义相册是否显示 闪光灯开关按钮
     options.isShowFlashButtonCamera = true;
-
+    /// 是否预览照片 如拍照完成 或者相册选择完成 默认为 true 预览
+    options.isPreviewImage = false;
     ///调起自定义相机
     ///拍照的返回结果
     CameraResultInfo resultInfo =

@@ -39,6 +39,19 @@ class CommonCameraFunction {
   ///打开相机
   static Future<CameraResultInfo> openCamera(
       {CameraConfigOptions cameraConfigOptions}) async {
+    Map<String, dynamic> options = getCameraConfigOptions(cameraConfigOptions);
+    //Flutter 向 Android iOS 中基本的发送消息方式
+    final Map<String, dynamic> result = await sendMessage({
+      "method": "openCamera",
+      "ontent": "打开自定义相机",
+      "code": 100,
+      "options": options
+    });
+    return CameraResultInfo.fromMap(result);
+  }
+
+  static Map<String, dynamic> getCameraConfigOptions(
+      CameraConfigOptions cameraConfigOptions) {
     if (cameraConfigOptions == null) {
       cameraConfigOptions = new CameraConfigOptions();
     }
@@ -48,16 +61,21 @@ class CommonCameraFunction {
     options['isShowPhotoAlbum'] = cameraConfigOptions.isShowPhotoAlbum;
     options['isShowSelectCamera'] = cameraConfigOptions.isShowSelectCamera;
 
-    //Flutter 向 Android iOS 中基本的发送消息方式
-    final Map<String, dynamic> result = await sendMessage(
-        {"method": "openCamera", "ontent": "打开自定义相机", "code": 100,"options":options});
-    return CameraResultInfo.fromMap(result);
+    options['isPreviewImage'] = cameraConfigOptions.isPreviewImage;
+    options['isCropImage'] = cameraConfigOptions.isCropImage;
+    return options;
   }
 
   ///打开相册
-  static Future<CameraResultInfo> openPhotoAlbum() async {
-    final Map<String, dynamic> result = await sendMessage(
-        {"method": "openPhotoAlbum", "ontent": "打开系统相册", "code": 102});
+  static Future<CameraResultInfo> openPhotoAlbum(
+      {CameraConfigOptions cameraConfigOptions}) async {
+    Map<String, dynamic> options = getCameraConfigOptions(cameraConfigOptions);
+    final Map<String, dynamic> result = await sendMessage({
+      "method": "openPhotoAlbum",
+      "ontent": "打开系统相册",
+      "code": 102,
+      "options": options
+    });
 
     return CameraResultInfo.fromMap(result);
   }

@@ -22,4 +22,9 @@ class CameraConfigOptions {
   ///默认自定义相册是否显示 闪光灯开关按钮
   bool isShowFlashButtonCamera = true;
 
+  /// 是否预览照片 如拍照完成 或者相册选择完成
+  bool isPreviewImage = true;
+
+  /// 是否启动裁剪功能 如拍照完成 或者相册选择完成
+  bool isCropImage = false;
 }

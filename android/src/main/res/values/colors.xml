@@ -2,8 +2,9 @@
 <resources>
 
     <color name="transparent">#00000000</color>
-    <color name="black">#000000</color>
+    <color name="black">#ff000000</color>
     <color name="black_alpha_48">#30000000</color>
     <color name="trans">#00000000</color>
     <color name="colorTransparent_15">#D9ffffff</color>
+    <color name="colorTransparent_01">#10ffffff</color>
 </resources>

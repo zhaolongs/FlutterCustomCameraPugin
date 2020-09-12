@@ -248,6 +248,7 @@ public class CameraOpenActivity extends Activity {
         lIntent.putExtra("mCropWidth", mCropWidth);
         lIntent.putExtra("mICrop", mMICrop);
         lIntent.putExtra("source", source);
+        lIntent.putExtra("cameraConfigOptions",mCameraConfigOptions);
         Log.d(LOGTAG, "imageUrl " + mFilePath);
         
         ///发一个广播

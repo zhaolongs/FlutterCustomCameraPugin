@@ -41,7 +41,7 @@ public class PhotoAlbumOpenActivity extends Activity {
     private int mCropWidth;
     private int mCropHeight;
     private boolean mMICrop;
-    
+    private CameraConfigOptions mCameraConfigOptions ;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +56,9 @@ public class PhotoAlbumOpenActivity extends Activity {
         mCropHeight = lIntent.getIntExtra("cropHeight",500);
 
         mMICrop = lIntent.getBooleanExtra("mICrop",false);
+        
+        mCameraConfigOptions = (CameraConfigOptions) getIntent().getSerializableExtra("cameraConfigOptions");
+        
         
         mCameraUtils = CameraXUtils.getInstance();
         CameraXUtils.getInstance().openCapTureGroupFunction(PhotoAlbumOpenActivity.this);
@@ -119,6 +122,7 @@ public class PhotoAlbumOpenActivity extends Activity {
         lIntent.putExtra("mCropHeight", mCropHeight);
         lIntent.putExtra("mCropWidth", mCropWidth);
         lIntent.putExtra("mICrop", mMICrop);
+        lIntent.putExtra("cameraConfigOptions",mCameraConfigOptions);
         Log.d(LOGTAG, "imageUrl " + mFilePath);
         
         ///发一个广播
