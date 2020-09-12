@@ -25,4 +25,24 @@ class FlutterCustomCameraPugin {
     final CameraResultInfo result = await CommonCameraFunction.openPhotoAlbum();
     return result ;
   }
+
+  ///打开系统相机
+  static Future<CameraResultInfo> openSystemCamera({CameraConfigOptions cameraConfigOptions}) async{
+    //Flutter 向 Android iOS 中基本的发送消息方式
+    final CameraResultInfo result = await CommonCameraFunction.openSystemCamera(cameraConfigOptions: cameraConfigOptions);
+    return result ;
+  }
+
+  ///打开系统相册
+  static Future<CameraResultInfo> openSystemPhotoAlbum({CameraConfigOptions cameraConfigOptions}) async{
+    //Flutter 向 Android iOS 中基本的发送消息方式
+    final CameraResultInfo result = await CommonCameraFunction.openSystemPhotoAlbum(cameraConfigOptions: cameraConfigOptions);
+    return result ;
+  }
+  ///打开系统相机相册弹框
+  static Future<CameraResultInfo> openSystemAlert({CameraConfigOptions cameraConfigOptions}) async{
+    //Flutter 向 Android iOS 中基本的发送消息方式
+    final CameraResultInfo result = await CommonCameraFunction.openSystemAlert(cameraConfigOptions: cameraConfigOptions);
+    return result ;
+  }
 }

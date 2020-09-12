@@ -79,4 +79,38 @@ class CommonCameraFunction {
 
     return CameraResultInfo.fromMap(result);
   }
+
+  static openSystemCamera({CameraConfigOptions cameraConfigOptions})  async{
+    Map<String, dynamic> options = getCameraConfigOptions(cameraConfigOptions);
+    final Map<String, dynamic> result = await sendMessage({
+      "method": "openSystemCamera",
+      "ontent": "打开系统相机",
+      "code": 102,
+      "options": options
+    });
+
+    return CameraResultInfo.fromMap(result);
+  }
+
+  static openSystemPhotoAlbum({CameraConfigOptions cameraConfigOptions}) async{
+    Map<String, dynamic> options = getCameraConfigOptions(cameraConfigOptions);
+    final Map<String, dynamic> result = await sendMessage({
+      "method": "openPhotoAlbum",
+      "ontent": "打开系统相册",
+      "code": 102,
+      "options": options
+    });
+
+    return CameraResultInfo.fromMap(result);}
+
+  static openSystemAlert({CameraConfigOptions cameraConfigOptions})  async{
+    Map<String, dynamic> options = getCameraConfigOptions(cameraConfigOptions);
+    final Map<String, dynamic> result = await sendMessage({
+      "method": "openSystemAlert",
+      "ontent": "系统弹框选择相机相册",
+      "code": 102,
+      "options": options
+    });
+
+    return CameraResultInfo.fromMap(result);}
 }

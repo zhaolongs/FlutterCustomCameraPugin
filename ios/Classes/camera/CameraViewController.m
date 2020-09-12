@@ -8,8 +8,16 @@
 
 #import "CameraViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
+#import "TestViewController.h"
 
-@interface CameraViewController ()<AVCaptureFileOutputRecordingDelegate>
+#import "CameraShowViewController.h"
+#import "CameraShowViewController.h"
+#import "CameraUtils.h"
+#import "LeePhotoOrAlbumImagePicker.h"
+
+#import <Photos/PHAsset.h>
+#import <Photos/PHImageManager.h>
+@interface CameraViewController ()<AVCaptureFileOutputRecordingDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate>
 
 /*
  *  AVCaptureSession:它从物理设备得到数据流（比如摄像头和麦克风），输出到一个或
@@ -35,6 +43,13 @@
 @property (weak, nonatomic) IBOutlet UIButton *takePhotoBtn;
 @property (weak, nonatomic) IBOutlet UIButton *videoBtn;
 
+
+//相册
+@property (weak, nonatomic) IBOutlet UIButton *photoAlbumButton;
+
+@property (weak, nonatomic) IBOutlet UIButton *mCameraChangeButton;
+@property (weak, nonatomic) IBOutlet UIButton *mCameraFlashButton;
+
 @end
 
 @implementation CameraViewController
@@ -44,6 +59,7 @@
     if (self.iSession) {
         [self.iSession startRunning];
     }
+    [self initViewFunction];
 }
 
 -(void)viewWillDisappear:(BOOL)animated{
@@ -53,6 +69,32 @@
     }
 }
 
+-(void) initViewFunction{
+    
+    if(self.cameraOptions.isShowPhotoAlbum){
+        self.photoAlbumButton.hidden = NO;
+    }else{
+        self.photoAlbumButton.hidden = YES;
+    }
+    if(self.cameraOptions.isShowSelectCamera){
+        self.mCameraChangeButton.hidden = NO;
+    }else{
+        self.mCameraChangeButton.hidden = YES;
+    }
+    
+    if(self.cameraOptions.isShowFlashButtonCamera){
+        self.mCameraFlashButton.hidden = NO;
+    }else{
+        self.mCameraFlashButton.hidden = YES;
+    }
+}
+
+/*
+ 1、AVCaptureDevice： 代表抽象的硬件设备(如前置摄像头，后置摄像头等)。
+ 2、AVCaptureInput： 代表输入设备（可以是它的子类），它配置抽象硬件设备的ports。
+ 3、AVCaptureOutput： 它代表输出数据，管理着输出到一个movie或者图像。
+ 4、AVCaptureSession： 它是input和output的桥梁。它协调着input到output的数据传输
+ */
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.saveIndicatorView.hidden = YES;
@@ -117,12 +159,65 @@
 #pragma mark - ButtonAction
 
 - (IBAction)backAction:(id)sender {
-    [self closeCameraFunction];
+    [self closeCameraFunction:201];
+}
+- (IBAction)photoAlbumActioon:(UIButton *)sender {
+    // 跳转到相机或相册页面
+    UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+    imagePicker.delegate = self;
+    imagePicker.allowsEditing = NO;//编辑模式  但是编辑框是正方形的
+    imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    [self presentViewController:imagePicker animated:YES completion:nil];
+    
+    //     [self closeCameraFunction:204];
+    
+    //    [self.navigationController pushViewController:[[TestViewController alloc]init] animated:YES];
+    
 }
 
--(void) closeCameraFunction{
+/*
+ NSString *const  UIImagePickerControllerMediaType ;指定用户选择的媒体类型（文章最后进行扩展）
+ NSString *const  UIImagePickerControllerOriginalImage ;原始图片
+ NSString *const  UIImagePickerControllerEditedImage ;修改后的图片
+ NSString *const  UIImagePickerControllerCropRect ;裁剪尺寸
+ NSString *const  UIImagePickerControllerMediaURL ;媒体的URL
+ NSString *const  UIImagePickerControllerReferenceURL ;原件的URL
+ NSString *const  UIImagePickerControllerMediaMetadata;当来数据来源是照相机的时候这个值才有效
+ */
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+    NSString *type = [info objectForKey:UIImagePickerControllerMediaType];
+    [self saveImage:image];
+    
+    //    NSURL *imageAssetUrl = [info objectForKey:UIImagePickerControllerReferenceURL];
+    //
+    //    PHFetchResult*result = [PHAsset fetchAssetsWithALAssetURLs:@[imageAssetUrl] options:nil];
+    //
+    //    PHAsset *asset = [result firstObject];
+    //
+    //    PHImageRequestOptions *phImageRequestOptions = [[PHImageRequestOptions alloc] init];
+    //
+    //    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:phImageRequestOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+    //
+    //
+    //
+    //    }];
+    
+    
+    //     [CameraUtils nextWithImageUrl:filePath];
+    
+}
+
+// 取消图片选择调用此方法
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void) closeCameraFunction:(NSInteger) code{
     [self dismissViewControllerAnimated:YES completion:^{
-        NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:201] forKey:@"code"];
+        NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:code] forKey:@"code"];
         //发送消息
         NSNotification *notification = [NSNotification notificationWithName:@"NOTIFICATION_NAME"
                                                                      object:dict];
@@ -236,7 +331,56 @@
     
 }
 
-- (void)saveImage:(UIImage *)image {
+//iOS拍照之后图片自动旋转90度解决办法
+- (UIImage *)fixOrientation:(UIImage *) aImage{
+    if (aImage.imageOrientation == UIImageOrientationUp) return aImage;
+    
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    
+    switch (aImage.imageOrientation) { case UIImageOrientationDown: case UIImageOrientationDownMirrored: transform = CGAffineTransformTranslate(transform, aImage.size.width, aImage.size.height); transform = CGAffineTransformRotate(transform, M_PI); break;
+            
+        case UIImageOrientationLeft:
+        case UIImageOrientationLeftMirrored:
+            transform = CGAffineTransformTranslate(transform, aImage.size.width, 0);
+            transform = CGAffineTransformRotate(transform, M_PI_2);
+            break;
+            
+        case UIImageOrientationRight:
+        case UIImageOrientationRightMirrored:
+            transform = CGAffineTransformTranslate(transform, 0, aImage.size.height);
+            transform = CGAffineTransformRotate(transform, -M_PI_2);
+            break;
+        default:
+            break;
+    }
+    
+    switch (aImage.imageOrientation) { case UIImageOrientationUpMirrored: case UIImageOrientationDownMirrored: transform = CGAffineTransformTranslate(transform, aImage.size.width, 0); transform = CGAffineTransformScale(transform, -1, 1); break;
+            
+        case UIImageOrientationLeftMirrored:
+        case UIImageOrientationRightMirrored:
+            transform = CGAffineTransformTranslate(transform, aImage.size.height, 0);
+            transform = CGAffineTransformScale(transform, -1, 1);
+            break;
+        default:
+            break;
+    }
+    
+    CGContextRef ctx = CGBitmapContextCreate(NULL, aImage.size.width, aImage.size.height, CGImageGetBitsPerComponent(aImage.CGImage), 0, CGImageGetColorSpace(aImage.CGImage), CGImageGetBitmapInfo(aImage.CGImage)); CGContextConcatCTM(ctx, transform); switch (aImage.imageOrientation) { case UIImageOrientationLeft: case UIImageOrientationLeftMirrored: case UIImageOrientationRight: case UIImageOrientationRightMirrored:
+            
+            CGContextDrawImage(ctx, CGRectMake(0,0,aImage.size.height,aImage.size.width), aImage.CGImage);
+            break;
+            
+        default:
+            CGContextDrawImage(ctx, CGRectMake(0,0,aImage.size.width,aImage.size.height), aImage.CGImage);
+            break;
+    }
+    
+    CGImageRef cgimg = CGBitmapContextCreateImage(ctx); UIImage *img = [UIImage imageWithCGImage:cgimg]; CGContextRelease(ctx); CGImageRelease(cgimg); return img;
+}
+
+- (void)saveImage:(UIImage *)preImage {
+    
+    UIImage * image = [self fixOrientation:preImage];
     NSArray *paths =NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
     
     
@@ -246,21 +390,22 @@
     BOOL result =[UIImagePNGRepresentation(image)writeToFile:filePath   atomically:YES]; // 保存成功会返回YES
     if (result == YES) {
         NSLog(@"保存成功");
-        [[CustomeAlertView shareView] showCustomeAlertViewWithMessage:[NSString stringWithFormat:@"照片已保存至 %@",filePath]];
-        
-        NSMutableDictionary *dict = [[NSMutableDictionary alloc]init];
-        [dict setObject:filePath forKey:@"filePath"];
-        [dict setObject:[NSNumber numberWithInt:200] forKey:@"code"];
-        //发送消息
-        NSNotification *notification = [NSNotification notificationWithName:@"NOTIFICATION_NAME"
-                                                                     object:dict];
-        [[NSNotificationCenter defaultCenter] postNotification:notification];
-        
+        if (self.cameraOptions.isShowToast) {
+            [[CustomeAlertView shareView] showCustomeAlertViewWithMessage:[NSString stringWithFormat:@"照片已保存至 %@",filePath]];
+        }
         [self.saveIndicatorView stopAnimating];
-        
-        [self dismissViewControllerAnimated:YES completion:^{
+        if(self.cameraOptions.isPreviewImage){
+            //去预览
+            CameraShowViewController *previewController =[ [CameraShowViewController alloc]initWithNibName:@"CameraShowViewController" bundle:nil];
+            previewController.imageUrl = filePath;
+            [self.navigationController pushViewController:previewController animated:YES];
             
-        }];
+        }else{
+            [CameraUtils nextWithImageUrl:filePath];
+        }
+        
+        
+        
     }else{
         [[CustomeAlertView shareView] showCustomeAlertViewWithMessage:@"保存失败"];
         self.saveIndicatorView.hidden = YES;

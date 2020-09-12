@@ -9,6 +9,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CameraViewController">
             <connections>
+                <outlet property="photoAlbumButton" destination="Uq6-gp-pmw" id="qYC-ut-k7i"/>
                 <outlet property="saveIndicatorView" destination="rak-bs-jOD" id="uje-6p-WOs"/>
                 <outlet property="takePhotoBtn" destination="izB-1t-pw2" id="Tve-p3-LOH"/>
                 <outlet property="videoBtn" destination="MdO-RE-IeF" id="P13-U1-bKj"/>
@@ -107,7 +108,7 @@
                         <color key="titleColor" red="0.20000000000000001" green="0.47058823529999999" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </state>
                     <connections>
-                        <action selector="takePhotoAction:" destination="-1" eventType="touchUpInside" id="yC1-DG-Ec2"/>
+                        <action selector="photoAlbumActioon:" destination="-1" eventType="touchUpInside" id="9vz-s8-JRE"/>
                     </connections>
                 </button>
             </subviews>

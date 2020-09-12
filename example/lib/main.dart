@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text(' Flutter 自定义相机插件 '),
         ),
-        body: Column(
+        body:SingleChildScrollView(child:  Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> {
               },
             ),
             OutlineButton(
-              child: Text('打开相机'),
+              child: Text('打开自定义相机'),
               onPressed: () {
                 openCamera();
               },
@@ -77,21 +77,35 @@ class _MyAppState extends State<MyApp> {
                 openPhotoAlbum();
               },
             ),
+
             OutlineButton(
-              child: Text('考虑自定义一下？'),
+              child: Text('打开系统相机'),
               onPressed: () {
-                openCustomCamera();
+                openSystemCamera();
               },
             ),
+            OutlineButton(
+              child: Text('打开系统相册'),
+              onPressed: () {
+                openSystemPhotoAlbum();
+              },
+            ),
+            OutlineButton(
+              child: Text('打开系统相机相册选择弹框'),
+              onPressed: () {
+                openSystemAlert();
+              },
+            ),
+
             imageFile == null
                 ? Text("图片预览区域")
-                : Image.file(
-                    imageFile,
-                    width: 300,
-                    height: 300,
-                  ),
+                :  Image.file(
+              imageFile,
+              width: 375,
+              fit: BoxFit.fitWidth,
+            ),
           ],
-        ),
+        ),),
       ),
     );
   }
@@ -140,6 +154,42 @@ class _MyAppState extends State<MyApp> {
     /// 相册的选择返回结果
     /// 选择成功与取消都会回调
     CameraResultInfo resultInfo =await FlutterCustomCameraPugin.openPhotoAlbum();
+    if (resultInfo.code == 200) {
+      imageFile = new File(resultInfo.data["lImageUrl"]);
+    }
+
+    _cameraResultInfo =resultInfo ;
+    setState(() {});
+  }
+
+  void openSystemCamera() async{
+    CameraResultInfo resultInfo =
+        await FlutterCustomCameraPugin.openSystemCamera();
+
+    if (resultInfo.code == 200) {
+      imageFile = new File(resultInfo.data["lImageUrl"]);
+    } else if (resultInfo.code == 201) {
+      ///201 是拍照取消 如点击了关闭按钮
+      ///或者是 Android 手机的后退按钮
+    }
+  }
+
+  void openSystemPhotoAlbum() async {
+    /// 相册的选择返回结果
+    /// 选择成功与取消都会回调
+    CameraResultInfo resultInfo =await FlutterCustomCameraPugin.openSystemPhotoAlbum();
+    if (resultInfo.code == 200) {
+      imageFile = new File(resultInfo.data["lImageUrl"]);
+    }
+
+    _cameraResultInfo =resultInfo ;
+    setState(() {});
+  }
+
+  void openSystemAlert() async {
+    /// 相册的选择返回结果
+    /// 选择成功与取消都会回调
+    CameraResultInfo resultInfo =await FlutterCustomCameraPugin.openSystemAlert();
     if (resultInfo.code == 200) {
       imageFile = new File(resultInfo.data["lImageUrl"]);
     }

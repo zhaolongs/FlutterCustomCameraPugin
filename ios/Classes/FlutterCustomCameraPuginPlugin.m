@@ -2,7 +2,8 @@
 #import "CameraViewController.h"
 #import <AVFoundation/AVFoundation.h>
 #import "CustomeAlertView.h"
-
+#import "CameraConfigOption.h"
+#import "LeePhotoOrAlbumImagePicker.h"
 
 @interface FlutterCustomCameraPuginPlugin ()
 @property (nonatomic, strong)  FlutterReply flutterReply ;
@@ -40,6 +41,9 @@
             [dic setObject: [NSNumber numberWithInt:200] forKey:@"code"];
             //需要注意的是 这个方法只能回调一次
             self.flutterReply(dic);
+        }else  if(code == 200){
+            //自定义相机页面显示打开相册
+            [self openCamer:2];
         }else{
             NSDictionary *dict = [NSDictionary dictionary];
             [dic setObject:dict forKey:@"data"];
@@ -104,18 +108,48 @@
             callback(dic);
             
         }else  if ([method isEqualToString:@"openCamera"]) {
+            
+            
+            NSDictionary *optionsDict=message[@"options"];
+            
+            CameraConfigOption * cameraOptions = [[CameraConfigOption alloc]initWithDict:optionsDict];
+            
             NSLog(@"flutter 调用到了 ios openCamera 打开相机 ");
+            
             CameraViewController *cameraVC = [[CameraViewController alloc]initWithNibName:@"CameraViewController" bundle:nil];
             cameraVC.view.backgroundColor = UIColor.redColor;
-            cameraVC.modalPresentationStyle = UIModalPresentationCustom;
-            [UIApplication.sharedApplication.delegate.window.rootViewController presentViewController:cameraVC animated:YES completion:nil];
             
-        }else if ([method isEqualToString:@"test3"]) {
+            cameraVC.cameraOptions =cameraOptions;
             
+            
+            UINavigationController *navController =   [[UINavigationController alloc] init];
+            [navController pushViewController:cameraVC animated:YES];
+            navController.modalPresentationStyle = UIModalPresentationCustom;
+            navController.navigationBar.hidden = YES;
+            [UIApplication.sharedApplication.delegate.window.rootViewController presentViewController:navController animated:YES completion:nil];
+            
+            
+        }else if ([method isEqualToString:@"openPhotoAlbum"]) {
+            [weakSelf openCamer:2];
+        }else if ([method isEqualToString:@"openSystemCamera"]) {
+            
+            [weakSelf openCamer:1];
+        }else if ([method isEqualToString:@"openSystemAlert"]) {
+            
+            [weakSelf openCamer:3];
         }
     }];
     
+    
+    
+    
 }
 
-
+-(void)openCamer:(NSInteger) flag{
+    LeePhotoOrAlbumImagePicker *myPicker = [[LeePhotoOrAlbumImagePicker alloc]init];
+    [myPicker getPhotoAlbumOrTakeAPhotoWithController:UIApplication.sharedApplication.delegate.window.rootViewController photoBlock:^(UIImage *image) {
+        //回掉图片
+        NSLog(@"选择图片回调");
+    } withFlag : flag];
+}
 @end
