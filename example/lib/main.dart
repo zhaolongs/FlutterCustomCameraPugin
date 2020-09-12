@@ -196,9 +196,11 @@ class _MyAppState extends State<MyApp> {
     /// 相册的选择返回结果
     /// 选择成功与取消都会回调
     CameraResultInfo resultInfo =await FlutterCustomCameraPugin.openSystemAlert();
+
     if (resultInfo.code == 200) {
       imageFile = new File(resultInfo.data["lImageUrl"]);
     }
+
 
     _cameraResultInfo =resultInfo ;
     setState(() {});
