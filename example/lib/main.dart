@@ -33,6 +33,7 @@ class _MyAppState extends State<MyApp> {
     }
     if (!mounted) return;
 
+    imageFile = File("/var/mobile/Containers/Data/Application/395710CE-46E3-47EB-9D36-4C2697F91C83/Documents/1599919466them.png");
     setState(() {
       _cameraResultInfo = platformVersion;
     });
@@ -163,11 +164,16 @@ class _MyAppState extends State<MyApp> {
   }
 
   void openSystemCamera() async{
+    ///相机使用配置参数
+    CameraConfigOptions options = new CameraConfigOptions();
+    options.isPreviewImage = false;
     CameraResultInfo resultInfo =
-        await FlutterCustomCameraPugin.openSystemCamera();
+        await FlutterCustomCameraPugin.openSystemCamera(cameraConfigOptions: options);
 
     if (resultInfo.code == 200) {
-      imageFile = new File(resultInfo.data["lImageUrl"]);
+      String imageUrl =resultInfo.data["lImageUrl"];
+      print("openSystemCamera "+imageUrl.toString());
+      imageFile = new File(imageUrl);
     } else if (resultInfo.code == 201) {
       ///201 是拍照取消 如点击了关闭按钮
       ///或者是 Android 手机的后退按钮

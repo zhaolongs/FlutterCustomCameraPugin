@@ -27,6 +27,7 @@ class CommonCameraFunction {
     int code = reply["code"];
     String message = reply["message"];
     Map<String, dynamic> map = Map.from(reply);
+    print("返回数据  "+reply.toString());
     return Future.value(map);
   }
 

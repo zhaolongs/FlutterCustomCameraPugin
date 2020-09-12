@@ -9,6 +9,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CameraViewController">
             <connections>
+                <outlet property="backButton" destination="HUw-rb-AG7" id="WS5-F0-NKI"/>
+                <outlet property="mCameraChangeButton" destination="Rpb-1o-Xma" id="pQg-Ko-nSg"/>
+                <outlet property="mCameraFlashButton" destination="4NB-LX-BDY" id="awW-1l-dfQ"/>
                 <outlet property="photoAlbumButton" destination="Uq6-gp-pmw" id="qYC-ut-k7i"/>
                 <outlet property="saveIndicatorView" destination="rak-bs-jOD" id="uje-6p-WOs"/>
                 <outlet property="takePhotoBtn" destination="izB-1t-pw2" id="Tve-p3-LOH"/>

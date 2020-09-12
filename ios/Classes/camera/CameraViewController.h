@@ -16,4 +16,10 @@
 
 @property(strong,nonatomic) CameraConfigOption * cameraOptions;
 
+//页面标识
+//0 自定义 相机
+//1 系统相机
+//2 系统相册
+// 3 一个弹框选择
+@property(assign,nonatomic) NSInteger pageIndex ;
 @end

@@ -44,11 +44,16 @@
 @property (weak, nonatomic) IBOutlet UIButton *videoBtn;
 
 
+@property(assign,nonatomic) NSInteger openPageCount;
+
+
 //相册
 @property (weak, nonatomic) IBOutlet UIButton *photoAlbumButton;
 
 @property (weak, nonatomic) IBOutlet UIButton *mCameraChangeButton;
 @property (weak, nonatomic) IBOutlet UIButton *mCameraFlashButton;
+//关闭按钮
+@property (weak, nonatomic) IBOutlet UIButton *backButton;
 
 @end
 
@@ -56,37 +61,81 @@
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    if (self.iSession) {
-        [self.iSession startRunning];
+    if(self.pageIndex ==0){
+        if (self.iSession) {
+            [self.iSession startRunning];
+        }
     }
-    [self initViewFunction];
+    if(self.openPageCount ==0){
+        self.openPageCount ++;
+        [self initViewFunction];
+    }
+    
 }
 
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    if (self.iSession) {
-        [self.iSession stopRunning];
+    if(self.pageIndex ==0){
+        if (self.iSession) {
+            [self.iSession stopRunning];
+        }
     }
 }
 
 -(void) initViewFunction{
     
-    if(self.cameraOptions.isShowPhotoAlbum){
-        self.photoAlbumButton.hidden = NO;
+    self.saveIndicatorView.hidden = YES;
+    
+    if(self.pageIndex ==0){
+        [self initCameraFunction];
+    }else if (self.pageIndex ==1 ){
+        [self openPhotoAlbum];
+    }else if (self.pageIndex ==2 ){
+        [self openPhotoCamera];
     }else{
-        self.photoAlbumButton.hidden = YES;
-    }
-    if(self.cameraOptions.isShowSelectCamera){
-        self.mCameraChangeButton.hidden = NO;
-    }else{
-        self.mCameraChangeButton.hidden = YES;
+        [self showAlert];
     }
     
-    if(self.cameraOptions.isShowFlashButtonCamera){
-        self.mCameraFlashButton.hidden = NO;
+    if(self.pageIndex ==0){
+        if(self.cameraOptions.isShowPhotoAlbum){
+            self.photoAlbumButton.hidden = NO;
+        }else{
+            self.photoAlbumButton.hidden = YES;
+        }
+        if(self.cameraOptions.isShowSelectCamera){
+            self.mCameraChangeButton.hidden = NO;
+        }else{
+            self.mCameraChangeButton.hidden = YES;
+        }
+        if(self.cameraOptions.isShowFlashButtonCamera){
+            self.mCameraFlashButton.hidden = NO;
+        }else{
+            self.mCameraFlashButton.hidden = YES;
+        }
     }else{
+        self.photoAlbumButton.hidden = YES;
+        self.mCameraChangeButton.hidden = YES;
         self.mCameraFlashButton.hidden = YES;
+        self.takePhotoBtn.hidden = YES;
+        self.backButton.hidden = YES;
     }
+}
+-(void) showAlert{
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertAction *photoAlbumAction = [UIAlertAction actionWithTitle:@"从相册选择" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+       [self openPhotoAlbum];
+    }];
+    UIAlertAction *cemeraAction = [UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+       [self openPhotoCamera];
+    }];
+    UIAlertAction *cancleAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+    }];
+    [alertController addAction:photoAlbumAction];
+      [alertController addAction:cemeraAction];
+    [alertController addAction:cancleAction];
+   
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 /*
@@ -97,7 +146,10 @@
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.saveIndicatorView.hidden = YES;
+    
+}
+
+-(void) initCameraFunction{
     self.iSession = [[AVCaptureSession alloc]init];
     self.iSession.sessionPreset = AVCaptureSessionPresetHigh;
     
@@ -153,7 +205,6 @@
     [self.view.layer insertSublayer:self.iPreviewLayer atIndex:0];
     
     [self.iSession startRunning];
-    
 }
 
 #pragma mark - ButtonAction
@@ -162,19 +213,36 @@
     [self closeCameraFunction:201];
 }
 - (IBAction)photoAlbumActioon:(UIButton *)sender {
-    // 跳转到相机或相册页面
-    UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
-    imagePicker.delegate = self;
-    imagePicker.allowsEditing = NO;//编辑模式  但是编辑框是正方形的
-    imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    [self presentViewController:imagePicker animated:YES completion:nil];
     
+    [self openPhotoAlbum];
     //     [self closeCameraFunction:204];
     
     //    [self.navigationController pushViewController:[[TestViewController alloc]init] animated:YES];
     
 }
 
+/*
+ UIImagePickerControllerSourceTypePhotoLibrary,//图库
+ 
+ UIImagePickerControllerSourceTypeCamera,//调用相机
+ 
+ UIImagePickerControllerSourceTypeSavedPhotosAlbum //调用相册
+ */
+-(void) openPhotoCamera{
+    UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+    imagePicker.delegate = self;
+    imagePicker.allowsEditing = NO;//编辑模式  但是编辑框是正方形的
+    imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    [self presentViewController:imagePicker animated:YES completion:nil];
+}
+-(void) openPhotoAlbum{
+    // 跳转到相机或相册页面
+    UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+    imagePicker.delegate = self;
+    imagePicker.allowsEditing = NO;//编辑模式  但是编辑框是正方形的
+    imagePicker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+    [self presentViewController:imagePicker animated:YES completion:nil];
+}
 /*
  NSString *const  UIImagePickerControllerMediaType ;指定用户选择的媒体类型（文章最后进行扩展）
  NSString *const  UIImagePickerControllerOriginalImage ;原始图片
@@ -213,6 +281,10 @@
 // 取消图片选择调用此方法
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     [picker dismissViewControllerAnimated:YES completion:nil];
+    
+    if(self.pageIndex !=0){
+        [self closeCameraFunction:201];
+    }
 }
 
 -(void) closeCameraFunction:(NSInteger) code{
@@ -378,39 +450,50 @@
     CGImageRef cgimg = CGBitmapContextCreateImage(ctx); UIImage *img = [UIImage imageWithCGImage:cgimg]; CGContextRelease(ctx); CGImageRelease(cgimg); return img;
 }
 
+//拍照后的保存图片的方法
 - (void)saveImage:(UIImage *)preImage {
     
-    UIImage * image = [self fixOrientation:preImage];
+    UIImage * image = preImage;
+    
+    
+    image = [self fixOrientation:preImage];
+    
     NSArray *paths =NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
+    
+    NSDate* dat = [NSDate dateWithTimeIntervalSinceNow:0];
+    
+    NSTimeInterval a=[dat timeIntervalSince1970];
+    
+    NSString*timeString = [NSString stringWithFormat:@"%0.f", a];//转为字符型
     
     
     NSString *filePath = [[paths objectAtIndex:0]stringByAppendingPathComponent:
-                          [NSString stringWithFormat:@"demo.png"]];  // 保存文件的名称
+                          [NSString stringWithFormat:@"%@them.png",timeString]];  // 保存文件的名称
     
-    BOOL result =[UIImagePNGRepresentation(image)writeToFile:filePath   atomically:YES]; // 保存成功会返回YES
-    if (result == YES) {
-        NSLog(@"保存成功");
-        if (self.cameraOptions.isShowToast) {
-            [[CustomeAlertView shareView] showCustomeAlertViewWithMessage:[NSString stringWithFormat:@"照片已保存至 %@",filePath]];
-        }
-        [self.saveIndicatorView stopAnimating];
-        if(self.cameraOptions.isPreviewImage){
-            //去预览
-            CameraShowViewController *previewController =[ [CameraShowViewController alloc]initWithNibName:@"CameraShowViewController" bundle:nil];
-            previewController.imageUrl = filePath;
-            [self.navigationController pushViewController:previewController animated:YES];
-            
-        }else{
-            [CameraUtils nextWithImageUrl:filePath];
-        }
-        
-        
+    
+    NSData *imageDate = UIImageJPEGRepresentation(image, 0);
+    
+    NSString *fullPath = [[NSHomeDirectory() stringByAppendingPathComponent:@"Document"] stringByAppendingPathComponent:@"image"];
+    
+    NSLog(@"%@",fullPath);
+    
+    [imageDate writeToFile:filePath atomically:YES];
+    
+    
+    if (self.cameraOptions.isShowToast) {
+        [[CustomeAlertView shareView] showCustomeAlertViewWithMessage:[NSString stringWithFormat:@"照片已保存至 %@",filePath]];
+    }
+    [self.saveIndicatorView stopAnimating];
+    if(self.cameraOptions.isPreviewImage){
+        //去预览
+        CameraShowViewController *previewController =[ [CameraShowViewController alloc]initWithNibName:@"CameraShowViewController" bundle:nil];
+        previewController.imageUrl = filePath;
+        [self.navigationController pushViewController:previewController animated:YES];
         
     }else{
-        [[CustomeAlertView shareView] showCustomeAlertViewWithMessage:@"保存失败"];
-        self.saveIndicatorView.hidden = YES;
-        [self.saveIndicatorView stopAnimating];
+        [CameraUtils nextWithImageUrl:filePath];
     }
+    
     
 }
 - (IBAction)videoButtonAction:(id)sender {

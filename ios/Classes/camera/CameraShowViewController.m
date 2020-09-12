@@ -23,7 +23,7 @@
     [super viewDidLoad];
    
     
-    UIImage *img = [UIImage imageWithContentsOfFile:self.imageUrl];
+    UIImage *img = [UIImage imageWithContentsOfFile:@"/var/mobile/Containers/Data/Application/395710CE-46E3-47EB-9D36-4C2697F91C83/Documents/1599919466them.png"];
     
     self.showImageView .image = img;
 }
