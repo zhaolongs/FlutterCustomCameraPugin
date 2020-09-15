@@ -21,10 +21,12 @@ import com.studyyoun.camera.flutter_custom_camera_pugin.cameralibrary.utils.Bean
 import java.util.HashMap;
 import java.util.Map;
 
+import io.flutter.embedding.engine.dart.DartExecutor;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BasicMessageChannel;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -38,11 +40,14 @@ import io.flutter.plugin.common.StandardMessageCodec;
 public class FlutterCustomCameraPuginPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
 	
 	private static final String openCameraMethodName = "openCamera";
-	private BasicMessageChannel mMessageChannel;
-	private Context mContext;
-	private CameraFinishRecivier mCameraFinishRecivier;
-	private BasicMessageChannel.Reply mReply;
-	private Activity mActivity;
+	private static  BasicMessageChannel mMessageChannel;
+	private static  Context mContext;
+	private static CameraFinishRecivier mCameraFinishRecivier;
+	private static  BasicMessageChannel.Reply mReply;
+	private static Activity mActivity;
+	private static DartExecutor mDartExecutor;
+	
+	
 	
 	
 	/**
@@ -54,8 +59,34 @@ public class FlutterCustomCameraPuginPlugin implements FlutterPlugin, MethodCall
 	@Override
 	public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
 		
-		
 		mContext = flutterPluginBinding.getApplicationContext();
+		mDartExecutor = flutterPluginBinding.getFlutterEngine().getDartExecutor();
+		cameraAttachFunction(flutterPluginBinding.getBinaryMessenger());
+		
+	}
+	// This static function is optional and equivalent to onAttachedToEngine. It supports the old
+	// pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
+	// plugin registration via this function while apps migrate to use the new Android APIs
+	// post-flutter-1.12 via https://flutter.dev/go/android-project-migration.
+	//
+	// It is encouraged to share logic between onAttachedToEngine and registerWith to keep
+	// them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
+	// depending on the user's project. onAttachedToEngine or registerWith must both be defined
+	// in the same class.
+	public static void registerWith(Registrar registrar) {
+		
+		final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_custom_camera_pugin");
+		channel.setMethodCallHandler(new FlutterCustomCameraPuginPlugin());
+		
+		Log.e("Custom", "flutter Custom registerWith");
+		
+		mContext = registrar.activeContext();
+		mActivity = registrar.activity();
+		cameraAttachFunction(registrar.messenger());
+	}
+	
+	private static void cameraAttachFunction(BinaryMessenger binaryMessenger) {
+		
 		
 		mCameraFinishRecivier = new CameraFinishRecivier();
 		IntentFilter filter = new IntentFilter();
@@ -65,7 +96,7 @@ public class FlutterCustomCameraPuginPlugin implements FlutterPlugin, MethodCall
 		//消息接收监听
 		//BasicMessageChannel （主要是传递字符串和一些半结构体的数据）
 		//创建通
-		mMessageChannel = new BasicMessageChannel<Object>(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "flutter_and_native_custom_100", StandardMessageCodec.INSTANCE);
+		mMessageChannel = new BasicMessageChannel<Object>(binaryMessenger, "flutter_and_native_custom_100", StandardMessageCodec.INSTANCE);
 		// 接收消息监听
 		mMessageChannel.setMessageHandler(new BasicMessageChannel.MessageHandler<Object>() {
 			@Override
@@ -84,14 +115,13 @@ public class FlutterCustomCameraPuginPlugin implements FlutterPlugin, MethodCall
 				}
 			}
 		});
-		
 	}
 	
 	/**
 	 * @param arguments 参数
 	 * @param reply     回调依赖
 	 */
-	private void messageHandlerControllerFunction(Map<Object, Object> arguments, BasicMessageChannel.Reply<Object> reply) {
+	private static void messageHandlerControllerFunction(Map<Object, Object> arguments, BasicMessageChannel.Reply<Object> reply) {
 		
 		//方法名标识
 		String lMethod = (String) arguments.get("method");
@@ -133,7 +163,7 @@ public class FlutterCustomCameraPuginPlugin implements FlutterPlugin, MethodCall
 		}
 	}
 	
-	private CameraConfigOptions getCameraConfigOptions(Map<Object, Object> arguments) {
+	private static CameraConfigOptions getCameraConfigOptions(Map<Object, Object> arguments) {
 		Map<String, Object> lObjectMap = (Map<String, Object>) arguments.get("options");
 		
 		CameraConfigOptions lCameraConfigOptions = new CameraConfigOptions();
@@ -145,23 +175,7 @@ public class FlutterCustomCameraPuginPlugin implements FlutterPlugin, MethodCall
 		return lCameraConfigOptions;
 	}
 	
-	// This static function is optional and equivalent to onAttachedToEngine. It supports the old
-	// pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
-	// plugin registration via this function while apps migrate to use the new Android APIs
-	// post-flutter-1.12 via https://flutter.dev/go/android-project-migration.
-	//
-	// It is encouraged to share logic between onAttachedToEngine and registerWith to keep
-	// them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
-	// depending on the user's project. onAttachedToEngine or registerWith must both be defined
-	// in the same class.
-	public static void registerWith(Registrar registrar) {
-		
-		final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_custom_camera_pugin");
-		channel.setMethodCallHandler(new FlutterCustomCameraPuginPlugin());
-		
-		Log.e("Custom", "flutter Custom registerWith");
-	}
-	
+
 	@Override
 	public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
 		if (call.method.equals("getPlatformVersion")) {
@@ -200,7 +214,7 @@ public class FlutterCustomCameraPuginPlugin implements FlutterPlugin, MethodCall
 	}
 	
 	
-	class CameraFinishRecivier extends BroadcastReceiver {
+	static class CameraFinishRecivier extends BroadcastReceiver {
 		
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -213,7 +227,7 @@ public class FlutterCustomCameraPuginPlugin implements FlutterPlugin, MethodCall
 	}
 	
 	
-	public Handler mHandler = new Handler() {
+	public static Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);

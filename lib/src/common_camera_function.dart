@@ -64,6 +64,7 @@ class CommonCameraFunction {
 
     options['isPreviewImage'] = cameraConfigOptions.isPreviewImage;
     options['isCropImage'] = cameraConfigOptions.isCropImage;
+    options['iconsList'] = cameraConfigOptions.iconsList;
     return options;
   }
 

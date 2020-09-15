@@ -17,12 +17,22 @@
 
 > 0.0.1 版本 只支持 Android （已发布 2020-09-09）
 > 0.0.3 版本 同时支持 iOS  (已发布 2020-09-12)
+> 0.0.5 版本 自定义相机 同时支持 iOS  (已发布 2020-09-15)
 
-> 0.0.3 版本支持的功能 
-> 	Android iOS双平台的自定义相机 、相册选择功能
-> iOS 平台的底部弹框选择（Android 还不支持）
-> 
+> 0.0.5 版本的功能修复  
+>    iOS平台的图片资源策略修改
 
+***
+本插件实现的最终目标​：
+
+* 1、调用原生默认的自定义相机
+
+* 2、调用原生的系统相机、相册选择图片
+
+* 3、拍照或者选择照片后 调用 系统裁剪（自定义）功能
+
+* 4、在 Flutter Widget 中嵌入 自定义相机，允许使用 Widget 开发的页面布局来操作相机
+****
 如下图是默认情况下自定义相机的页面效果：
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200909175911101.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3psMTg2MDM1NDM1NzI=,size_16,color_FFFFFF,t_70#pic_center)
@@ -160,4 +170,5 @@ class CameraResultInfo {
  }
 ```
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200909180102603.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3psMTg2MDM1NDM1NzI=,size_16,color_FFFFFF,t_70#pic_center)
+本公众号会首发系列专题文章，付费的视频课程会在公众号中免费刊登，在你上下班的路上或者是睡觉前的一刻，本公众号都是你浏览知识干货的一个小选择，收藏不如行动，在那一刻，公众号会提示你该学习了。
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20200914205134479.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3psMTg2MDM1NDM1NzI=,size_16,color_FFFFFF,t_70#pic_center)

@@ -51,6 +51,8 @@ class _MyAppState extends State<MyApp> {
           children: [
             Text(
                 'Running on: ${_cameraResultInfo != null ? _cameraResultInfo.toString() : ''}\n'),
+
+//            Image.asset("icons/camera_record_icon.png",package: "flutter_custom_camera_pugin",),
             OutlineButton(
               child: Text('测试下'),
               onPressed: () {
@@ -178,6 +180,8 @@ class _MyAppState extends State<MyApp> {
       ///201 是拍照取消 如点击了关闭按钮
       ///或者是 Android 手机的后退按钮
     }
+
+    setState(() {});
   }
 
   void openSystemPhotoAlbum() async {

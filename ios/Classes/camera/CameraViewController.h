@@ -9,7 +9,7 @@
 #import "CustomeAlertView.h"
 #import "CameraConfigOption.h"
 #define UIScreen_Height [UIScreen mainScreen].bounds.size.height
-#define UIScreen_Width [UIScreen mainScreen].bounds.size.Width
+#define UIScreen_Width [ UIScreen mainScreen].bounds.size.width
 #import <UIKit/UIKit.h>
 
 @interface CameraViewController : UIViewController

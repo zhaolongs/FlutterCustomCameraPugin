@@ -40,7 +40,7 @@
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *saveIndicatorView;
 
 //拍照
-@property (weak, nonatomic) IBOutlet UIButton *takePhotoBtn;
+@property (strong, nonatomic)  UIButton *takePhotoBtn;
 @property (weak, nonatomic) IBOutlet UIButton *videoBtn;
 
 
@@ -84,6 +84,8 @@
 
 -(void) initViewFunction{
     
+    [self initCreateView];
+    
     self.saveIndicatorView.hidden = YES;
     
     if(self.pageIndex ==0){
@@ -120,21 +122,57 @@
         self.backButton.hidden = YES;
     }
 }
+
+-(void) initCreateView{
+    UIButton *button1 = [UIButton buttonWithType:UIButtonTypeCustom];
+    button1.frame=CGRectMake(UIScreen_Width/2-40, UIScreen_Height - 100, 60, 60);
+    
+    NSString *takePhoneImageUrl =self.cameraOptions.imageAssetList[1];
+    //设置button填充
+    UIImage *icon = [UIImage imageWithContentsOfFile:takePhoneImageUrl];
+    [button1 setImage:icon forState:UIControlStateNormal];
+    
+    
+    UIImageView *imageView = [[UIImageView alloc]initWithFrame:button1.frame];
+    imageView.image = icon;
+    
+    //设置button填充图片
+    [button1 setImage:icon forState:UIControlStateNormal];
+    button1.layer.cornerRadius = 30;
+    button1.backgroundColor = [UIColor redColor];
+    button1.clipsToBounds = YES;
+    [button1 setTitle:@"拍照" forState:UIControlStateNormal];
+    [button1 addTarget:self action:@selector(takePhotoAction:) forControlEvents:UIControlEventTouchUpInside];
+    self.takePhotoBtn = button1;
+    [self.view addSubview:button1];
+    
+    
+    
+    UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    closeButton.frame=CGRectMake(20, 30, 60, 60);
+    closeButton.backgroundColor = [UIColor clearColor];
+    [closeButton setTitle:@"取消" forState:UIControlStateNormal];
+    [closeButton addTarget:self action:@selector(backAction:) forControlEvents:UIControlEventTouchUpInside];
+    self.backButton = closeButton;
+    
+    [self.view addSubview:closeButton];
+    
+}
 -(void) showAlert{
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     UIAlertAction *photoAlbumAction = [UIAlertAction actionWithTitle:@"从相册选择" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-       [self openPhotoAlbum];
+        [self openPhotoAlbum];
     }];
     UIAlertAction *cemeraAction = [UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-       [self openPhotoCamera];
+        [self openPhotoCamera];
     }];
     UIAlertAction *cancleAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         
     }];
     [alertController addAction:photoAlbumAction];
-      [alertController addAction:cemeraAction];
+    [alertController addAction:cemeraAction];
     [alertController addAction:cancleAction];
-   
+    
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -209,7 +247,7 @@
 
 #pragma mark - ButtonAction
 
-- (IBAction)backAction:(id)sender {
+- (void)backAction:(UIButton*)sender {
     [self closeCameraFunction:201];
 }
 - (IBAction)photoAlbumActioon:(UIButton *)sender {
@@ -256,7 +294,7 @@
     
     [picker dismissViewControllerAnimated:YES completion:nil];
     UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
-    NSString *type = [info objectForKey:UIImagePickerControllerMediaType];
+    //    NSString *type = [info objectForKey:UIImagePickerControllerMediaType];
     [self saveImage:image];
     
     //    NSURL *imageAssetUrl = [info objectForKey:UIImagePickerControllerReferenceURL];
@@ -289,7 +327,7 @@
 
 -(void) closeCameraFunction:(NSInteger) code{
     [self dismissViewControllerAnimated:YES completion:^{
-        NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:code] forKey:@"code"];
+        NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:code] forKey:@"code"];
         //发送消息
         NSNotification *notification = [NSNotification notificationWithName:@"NOTIFICATION_NAME"
                                                                      object:dict];
@@ -359,7 +397,7 @@
     [self.iDevice unlockForConfiguration];
     
 }
-- (IBAction)takePhotoAction:(id)sender {
+- (void)takePhotoAction:(UIButton *)sender {
     
     if ([self.takePhotoBtn.titleLabel.text isEqualToString:@"拍照"]) {
         AVCaptureConnection *connection = [self.iOutput connectionWithMediaType:AVMediaTypeVideo];

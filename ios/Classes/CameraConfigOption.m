@@ -33,13 +33,17 @@
          public boolean isShowToast = true ;
          */
         
+           _iconsList =[result objectForKey:@"iconsList"];
+        
         _isShowPhotoAlbum = [[result objectForKey:@"isShowPhotoAlbum"] boolValue];
         _isShowSelectCamera =  [[result objectForKey:@"isShowSelectCamera"] boolValue];
         _isShowFlashButtonCamera = [[result objectForKey:@"isShowFlashButtonCamera"] boolValue];
         
         _isPreviewImage =  [[result objectForKey:@"isPreviewImage"] boolValue];
         _isCropImage =  [[result objectForKey:@"isCropImage"] boolValue];
-        _isShowToast = [[result objectForKey:@"isShowToast"] boolValue]; 
+        _isShowToast = [[result objectForKey:@"isShowToast"] boolValue];
+        
+     
         
         
     }

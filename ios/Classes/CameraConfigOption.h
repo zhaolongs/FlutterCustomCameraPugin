@@ -27,6 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否显示提示
 @property(assign,nonatomic) BOOL isShowToast ;
 
+@property(strong,nonatomic) NSArray *iconsList;
+@property(strong,nonatomic) NSArray *imageAssetList;
+
 -(instancetype)initWithDict:(NSDictionary *)result;
 +(instancetype)userWithDict:(NSDictionary *)dict;
 @end

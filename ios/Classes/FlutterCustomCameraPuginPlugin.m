@@ -49,7 +49,7 @@
             self.flutterReply(dic);
         }else  if(code == 204){
             //自定义相机页面显示打开相册
-            [self openCamer:1 andWithOptions:nil];
+            [self openCamer:1 andWithOptions:nil  andWithRegistrar:nil];
         }else{
             NSDictionary *dict = [NSDictionary dictionary];
             [dic setObject:dict forKey:@"data"];
@@ -95,17 +95,16 @@
             [dic setObject: [NSNumber numberWithInt:200] forKey:@"code"];
             //需要注意的是 这个方法只能回调一次
             callback(dic);
-            
         }else  if ([method isEqualToString:@"openCamera"]) {
-            [weakSelf openCamer:0 andWithOptions:optionsDict];
+            [weakSelf openCamer:0 andWithOptions:optionsDict andWithRegistrar:registrar];
         }else if ([method isEqualToString:@"openPhotoAlbum"]) {
-            [weakSelf openCamer:1 andWithOptions:optionsDict];
+            [weakSelf openCamer:1 andWithOptions:optionsDict  andWithRegistrar:registrar];
         }else if ([method isEqualToString:@"openSystemCamera"]) {
             
-            [weakSelf openCamer:2 andWithOptions:optionsDict];
+            [weakSelf openCamer:2 andWithOptions:optionsDict  andWithRegistrar:registrar];
         }else if ([method isEqualToString:@"openSystemAlert"]) {
             
-            [weakSelf openCamer:3 andWithOptions:optionsDict];
+            [weakSelf openCamer:3 andWithOptions:optionsDict  andWithRegistrar:registrar];
         }
     }];
     
@@ -114,13 +113,22 @@
     
 }
 
--(void)openCamer:(NSInteger) flag andWithOptions:(NSDictionary*) optionsDict{
+-(void)openCamer:(NSInteger) flag andWithOptions:(NSDictionary*) optionsDict andWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     CameraConfigOption * cameraOptions = [[CameraConfigOption alloc]initWithDict:optionsDict];
-    
+    if (registrar!=nil) {
+        NSArray *imageArray = cameraOptions.iconsList;
+        NSMutableArray *assetImageArray = [[NSMutableArray alloc]init];
+        for (int i=0; i<imageArray.count; i++) {
+            NSString *assetUrl = [registrar lookupKeyForAsset:imageArray[i] fromPackage:@"flutter_custom_camera_pugin"];
+            [assetImageArray addObject:assetUrl];
+        }
+        
+        cameraOptions.imageAssetList = assetImageArray;
+    }
     NSLog(@"flutter 调用到了 ios openCamera 打开相机 ");
     
     // 自定义相机页面
-    CameraViewController *cameraVC = [[CameraViewController alloc]initWithNibName:@"CameraViewController" bundle:nil];
+    CameraViewController *cameraVC = [[CameraViewController alloc]init];
     cameraVC.view.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0];
     //配置参数
     cameraVC.cameraOptions =cameraOptions;

@@ -27,4 +27,13 @@ class CameraConfigOptions {
 
   /// 是否启动裁剪功能 如拍照完成 或者相册选择完成
   bool isCropImage = false;
+
+  List<String> iconsList =[
+    "icons/camera_record_icon.png",
+    "icons/camera_flash_open_icon.png",
+    "icons/camera_record_finish.png",
+    "icons/camera_record_icon.png",
+    "icons/camera_select_photo_icon.png",
+    "icons/camera_white_back_icon.png"
+  ];
 }
